@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Work.block.module.scss';
+import Chip from '../../components/chip/Chip';
 
 const WorkBlock: React.FC<{
   where: { name: string; url: string };
@@ -24,7 +25,29 @@ const WorkBlock: React.FC<{
       </div>
       <br />
       <br />
-      <h2>What are we doing? (judging by the text - nothing, but it's not)</h2>
+      <h2>What are we doing?</h2>
+      <br />
+      <div className={styles.work_block__chips}>
+        <Chip>Code cool websites</Chip>
+        <Chip>Build amazing backends</Chip>
+        <Chip>Drink a lot of coffee/tea</Chip>
+        <span className={styles.line_break} />
+        <Chip>Design of designs</Chip>
+        <Chip>Make VK mini apps</Chip>
+        <Chip>Participate in hackathons to learn something</Chip>
+      </div>
+      <br />
+      <h2>How to contact?</h2>
+      <div className={styles.work_block__contacts}>
+        <h4>
+          <a href={where.url} target="_blank">
+            VK
+          </a>
+        </h4>
+        <h4>
+          <a href={'mailto:tap_team@mail.ru'}>Email</a>
+        </h4>
+      </div>
     </div>
   );
 };

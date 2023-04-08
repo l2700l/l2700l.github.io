@@ -1,6 +1,6 @@
 import React from 'react';
-import Terminal from '../../components/terminal/Terminal';
 import styles from './Terminal.block.module.scss';
+import { Terminal } from '../../components/terminal';
 
 const startMessage = `
     ██╗     ██████╗ ███████╗ ██████╗  ██████╗ ██╗
