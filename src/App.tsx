@@ -28,10 +28,10 @@ function App() {
       const newState =
         prevState.length < 10
           ? [...prevState, e.key]
-          : [...prevState.slice(prevState.length - 10), e.key];
+          : [...prevState.slice(1, prevState.length), e.key];
       if (JSON.stringify(newState) === konamiCode) {
         setShowTerminal(true);
-        alert('0_o');
+        alert('check second block 0_o');
       }
       return newState;
     });
