@@ -1,0 +1,81 @@
+.social {
+  margin-block-start: 0;
+  padding-inline-start: 0;
+  display: flex;
+}
+.social li {
+  list-style:none;
+}
+.social li a {
+  display:block;
+  position:relative;
+  width:100px;
+  height:100px;
+  line-height:100px;
+  font-size:40px;
+  text-align:center;
+  text-decoration:none;
+  color:#404040;
+  margin: 0 30px;
+  transition:.5s;
+}
+.social li a span {
+  position:absolute;
+  transition: transform .5s;
+}
+.social li a span:nth-child(1),
+.social li a span:nth-child(3){
+  width:100%;
+  height:3px;
+  background:#404040;
+}
+.social li a span:nth-child(1) {
+  top:0;
+  left:0;
+  transform-origin: right;
+}
+.social li a:hover span:nth-child(1) {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:transform .5s;
+}
+
+.social li a span:nth-child(3) {
+  bottom:0;
+  left:0;
+  transform-origin: left;
+}
+.social li a:hover span:nth-child(3) {
+  transform: scaleX(0);
+  transform-origin: right;
+  transition:transform .5s;
+}
+
+.social li a span:nth-child(2),
+.social li a span:nth-child(4){
+  width:3px;
+  height:100%;
+  background:#404040;
+}
+.social li a span:nth-child(2) {
+  top:0;
+  left:0;
+  transform:scale(0);
+  transform-origin: bottom;
+}
+.social li a:hover span:nth-child(2) {
+  transform: scale(1);
+  transform-origin: top;
+  transition:transform .5s;
+}
+.social li a span:nth-child(4) {
+  top:0;
+  right:0;
+  transform:scale(0);
+  transform-origin: top;
+}
+.social li a:hover span:nth-child(4) {
+  transform: scale(1);
+  transform-origin: bottom;
+  transition:transform .5s;
+}

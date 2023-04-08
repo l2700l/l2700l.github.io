@@ -6,6 +6,7 @@ import GreetingBlock from './blocks/greeting/Greeting.block';
 import TerminalBlock from './blocks/terminal/Terminal.block';
 import WorkBlock from './blocks/work/Work.block';
 import ttlogo from './images/ttlogo.jpeg';
+import EndBlock from './blocks/end/End.block';
 
 const konamiCode = JSON.stringify([
   'ArrowUp',
@@ -60,6 +61,11 @@ function App() {
             where={{ name: 'Tap Team', url: 'https://vk.com/tap_team_studio' }}
             logo={{ image: ttlogo, text: 'tap - tap' }}
           />
+        </section>
+      </div>
+      <div className={styles.app__block_wrapper}>
+        <section className={styles.app__block}>
+          <EndBlock />
         </section>
       </div>
     </div>
