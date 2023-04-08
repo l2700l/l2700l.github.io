@@ -47,6 +47,13 @@ function App() {
           <GreetingBlock name={'l2700l'} profession={'fullstack developer'} />
         </section>
       </div>
+      {showTerminal && (
+        <div className={styles.app__block_wrapper}>
+          <section className={styles.app__block}>
+            <TerminalBlock user={'l2700l'} name={'fullstack-dev'} />
+          </section>
+        </div>
+      )}
       <div className={styles.app__block_wrapper}>
         <section className={styles.app__block}>
           <WorkBlock
@@ -55,13 +62,6 @@ function App() {
           />
         </section>
       </div>
-      {showTerminal && (
-        <div className={styles.app__block_wrapper}>
-          <section className={styles.app__block}>
-            <TerminalBlock user={'l2700l'} name={'fullstack-dev'} />
-          </section>
-        </div>
-      )}
     </div>
   );
 }

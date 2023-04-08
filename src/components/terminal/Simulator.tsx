@@ -52,12 +52,19 @@ const Simulator: React.FC<{
   >(startMessage ? [{ output: startMessage, path: '~' }] : []);
   const [currentPath, setCurrentPath] = useState('~');
   const inputRef = useRef<HTMLInputElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
   const orientation = useMobileOrientation();
 
   const updateCommand = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCommands((prevState) => {
       return [...prevState.slice(0, prevState.length - 1), e.target.value];
     });
+  };
+
+  const scrollToBottom = () => {
+    if (divRef?.current !== undefined) {
+      divRef!.current!.scrollTop = divRef?.current?.scrollHeight || 0;
+    }
   };
 
   function parsePath(
@@ -71,7 +78,6 @@ const Simulator: React.FC<{
         nPath !== ''
           ? (nPath += nPath[path.length - 1] === '/' ? token : '/' + token)
           : (nPath = token);
-        console.log(nPath, parsedPath);
         if (typeof parsedPath[token as keyof typeof parsedPath] === 'object') {
           parsedPath = parsedPath[token as keyof typeof parsedPath];
         } else {
@@ -113,7 +119,6 @@ const Simulator: React.FC<{
         const tokens = newPath.split('/').filter((token) => token !== '');
         for (let i = 0; i < tokens.length; i++) {
           const token = tokens[i];
-          console.log('token: ', token, 'path:', path);
           if (token !== '..') {
             try {
               const tree = parsePath(path + '/' + token);
@@ -124,7 +129,6 @@ const Simulator: React.FC<{
                 throw new Error();
               }
             } catch (e) {
-              console.log('error =(');
               throw new Error();
             }
           } else {
@@ -261,7 +265,6 @@ const Simulator: React.FC<{
       });
     }
     if (e.key !== 'Enter') {
-      inputRef?.current?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
     const command = commands[commands.length - 1].split(' ');
@@ -274,13 +277,7 @@ const Simulator: React.FC<{
         setHistoryIndex(prevState.length);
         return [...prevState, ''];
       });
-      setTimeout(
-        () =>
-          inputRef?.current?.scrollIntoView({
-            behavior: 'smooth',
-          }),
-        1
-      );
+      setTimeout(() => scrollToBottom(), 1);
       return;
     }
     switch (Commands[command[0].toLowerCase() as keyof typeof Commands]) {
@@ -419,13 +416,11 @@ const Simulator: React.FC<{
       setHistoryIndex(prevState.length);
       return [...prevState, ''];
     });
-    setTimeout(
-      () => inputRef?.current?.scrollIntoView({ behavior: 'smooth' }),
-      1
-    );
+    setTimeout(() => scrollToBottom(), 1);
   };
   return (
     <div
+      ref={divRef}
       className={styles.simulator}
       style={{
         borderTopLeftRadius: borderRadius?.topLeft ? borderRadius?.topLeft : 0,
