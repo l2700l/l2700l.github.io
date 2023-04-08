@@ -2,9 +2,12 @@
   margin-block-start: 0;
   padding-inline-start: 0;
   display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
 }
 .social li {
   list-style:none;
+  margin-bottom: 1rem;
 }
 .social li a {
   display:block;

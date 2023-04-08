@@ -24,19 +24,15 @@ const WorkBlock: React.FC<{
         />
       </div>
       <br />
-      <br />
       <h2>What are we doing?</h2>
-      <br />
       <div className={styles.work_block__chips}>
         <Chip>Code cool websites</Chip>
         <Chip>Build amazing backends</Chip>
         <Chip>Drink a lot of coffee/tea</Chip>
-        <span className={styles.line_break} />
         <Chip>Design of designs</Chip>
         <Chip>Make VK mini apps</Chip>
         <Chip>Participate in hackathons to learn something</Chip>
       </div>
-      <br />
       <h2>How to contact?</h2>
       <div className={styles.work_block__contacts}>
         <h4>
