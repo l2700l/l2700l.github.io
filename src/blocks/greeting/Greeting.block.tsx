@@ -49,11 +49,6 @@ const GreetingBlock: React.FC<{ name: string; profession: string }> = ({
       <p
         className={styles.greeting_block_fade_forwards}
         ref={textRef}
-        title={
-          text === initialText
-            ? undefined
-            : 'I really broke to make this code work, maybe in the future it will work…'
-        }
         style={
           {
             '--i': '1.5s',

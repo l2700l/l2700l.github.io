@@ -5,19 +5,53 @@ import './nyan_cat.scrollbar.css';
 import GreetingBlock from './blocks/greeting/Greeting.block';
 import TerminalBlock from './blocks/terminal/Terminal.block';
 
+const konamiCode = JSON.stringify([
+  'ArrowUp',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowLeft',
+  'ArrowRight',
+  'a',
+  'b',
+]);
+
 function App() {
+  const [, setKeys] = useState<Array<string>>([]);
+  const [showTerminal, setShowTerminal] = useState(false);
+  const handleKeys = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    setKeys((prevState) => {
+      const newState =
+        prevState.length < 10
+          ? [...prevState, e.key]
+          : [...prevState.slice(prevState.length - 10), e.key];
+      if (JSON.stringify(newState) === konamiCode) {
+        setShowTerminal(true);
+        alert('0_o');
+      }
+      return newState;
+    });
+  };
   return (
-    <div className={styles.app}>
+    <div
+      onKeyDown={(e) => !showTerminal && handleKeys(e)}
+      tabIndex={showTerminal ? undefined : 0}
+      className={styles.app}
+    >
       <div className={styles.app__block_wrapper}>
         <section className={styles.app__block}>
           <GreetingBlock name={'l2700l'} profession={'fullstack developer'} />
         </section>
       </div>
-      <div className={styles.app__block_wrapper}>
-        <section className={styles.app__block}>
-          <TerminalBlock user={'l2700l'} name={'fullstack-dev'} />
-        </section>
-      </div>
+      {showTerminal && (
+        <div className={styles.app__block_wrapper}>
+          <section className={styles.app__block}>
+            <TerminalBlock user={'l2700l'} name={'fullstack-dev'} />
+          </section>
+        </div>
+      )}
     </div>
   );
 }
