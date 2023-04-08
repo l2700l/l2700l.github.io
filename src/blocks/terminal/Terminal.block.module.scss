@@ -1,0 +1,11 @@
+@import '../../_variables.scss';
+.terminal_block__title {
+  word-break: break-word;
+  text-align: center;
+}
+.terminal_block__title_me {
+  color: $userText;
+}
+.terminal_block__title_terminal {
+  color: $commandText;
+}

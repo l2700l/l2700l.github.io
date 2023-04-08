@@ -1,0 +1,48 @@
+@import '../../_variables.scss';
+$simulatorBackground: #282A34;
+$computerText: #5FBDAD;
+$atText: #75C6D0;
+$pathText: #FF479C;
+.simulator {
+    font-family: 'Consola Mono', Arial, serif;
+    background-color: $simulatorBackground;
+    height: calc(100% - 2.5rem);
+    width: calc(100% - 1rem);
+    overflow-y: scroll;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    padding: 0.5rem;
+}
+.simulator__line {
+    display: flex;
+    width: 100%;
+    white-space: nowrap;
+}
+.simulator__user {
+    color: $userText;
+}
+.simulator__computer {
+    color: $computerText;
+}
+.simulator__at {
+    color: $atText;
+}
+.simulator__path {
+    color: $pathText;
+}
+.simulator__command {
+    color: $commandText;
+    background-color: $simulatorBackground;
+    margin-left: 1rem;
+}
+input.simulator__command {
+    font-family: inherit;
+    border-top-style: hidden;
+    border-right-style: hidden;
+    border-left-style: hidden;
+    border-bottom-style: hidden;
+    outline: none;
+    font-size: inherit;
+    flex: 1;
+    margin-left: calc(1rem - 2px);
+}

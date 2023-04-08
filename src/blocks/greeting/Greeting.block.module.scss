@@ -1,0 +1,66 @@
+.greeting_block {
+  letter-spacing: .15em;
+  word-break: break-word;
+}
+.greeting_block__name {
+  padding-top: 1rem;
+  span {
+    text-shadow: 0 0 .5rem rgba(83, 91, 242, .5);
+    color: #535bf2;
+  }
+}
+.greeting_block__profession {
+
+}
+
+.greeting_block_typing {
+  --i: 0s;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing var(--i) steps(100, end);
+}
+
+.greeting_block_fade_forwards {
+  --i: 0s;
+  overflow: hidden;
+  animation: fade var(--i) forwards;
+}
+.greeting_block_fade_reverse {
+  --i: 0s;
+  overflow: hidden;
+  animation: fade-reverse var(--i) forwards;
+}
+
+.greeting_block_fill {
+  --i: 0s;
+  overflow: hidden;
+  color: white;
+  text-shadow: 0 0 3px rgba(255,255,255,.5);
+  background: url(https://i.ibb.co/RDTnNrT/animated-text-fill.png) repeat-y;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-animation: fill 80s linear infinite;
+  -webkit-transform: translate3d(0,0,0);
+  -webkit-backface-visibility: hidden;
+}
+
+@-webkit-keyframes fill {
+  0% { background-position: 0 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes fade {
+  from { opacity: 0 }
+  to { opacity: 100% }
+}
+
+@keyframes fade-reverse {
+  from { opacity: 100% }
+  to { opacity: 0 }
+}
