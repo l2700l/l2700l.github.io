@@ -410,7 +410,10 @@ const Simulator: React.FC<{
         ]);
         break;
       case Commands.clear:
+        setCommands([]);
         setOutputs([]);
+        setHistoryIndex(0);
+        break;
     }
     setCommands((prevState) => {
       setHistoryIndex(prevState.length);
