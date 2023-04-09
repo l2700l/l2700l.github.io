@@ -1,17 +1,19 @@
-export const logo = (
-  user: string,
-  name: string,
-  device: 'PC' | 'Mobile',
-  browserName: string,
-  data: any,
-  orientation: 'landscape' | 'portrait',
-  resolution: {width: number, height: number},
-  theme: 'Dark' | 'Light',
-  language: string,
-  timeZone: number
-) => {
-  return `
-            %              *%             | ${user}@${name}
+import { IApplication } from '../IApplication';
+
+export const NeofetchApplication: IApplication = () => {
+  const open = (
+    user: string,
+    name: string,
+    device: 'PC' | 'Mobile',
+    browserName: string,
+    data: any,
+    orientation: 'landscape' | 'portrait',
+    resolution: {width: number, height: number},
+    theme: 'Dark' | 'Light',
+    language: string,
+    timeZone: number
+  ) => {
+    return `            %              *%             | ${user}@${name}
          %%    %%%     %%%    %%          | ––––––––––––––––––
         %%         %%%         %%         | Device type: ${device}
          %        %% %%        %          | Device: ${(data?.device?.vendor + ' – ' + data?.device?.model) || 'unknown'}
@@ -27,4 +29,8 @@ export const logo = (
          %%    %%%     %%%    %%          | Author: l2700l
             %              *%             | GitHub: github.com/l2700l
 `;
+  };
+  
+  
+  return { open };
 };

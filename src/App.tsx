@@ -7,6 +7,7 @@ import TerminalBlock from './blocks/terminal/Terminal.block';
 import WorkBlock from './blocks/work/Work.block';
 import ttlogo from './images/ttlogo.jpeg';
 import EndBlock from './blocks/end/End.block';
+import Sl from './components/terminal/applications/sl/SL';
 
 const konamiCode = JSON.stringify([
   'ArrowUp',

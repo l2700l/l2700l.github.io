@@ -1,8 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Commands } from './commands';
 import styles from './Simulator.module.scss';
 import LineStart from './LineStart';
-import { logo } from './logo';
 import {
   browserName,
   isBrowser,
@@ -11,6 +10,9 @@ import {
 } from 'react-device-detect';
 import { FS } from './fs';
 import { home } from './fileSystem';
+import AppsProvider from './AppsProvider';
+import { Applications } from './applications/applicationsEnum';
+
 FS.import(home);
 const help = `command <required> [optional]
 
@@ -30,10 +32,21 @@ nano <path> [data]
     – write to file
 rm [-R] <path>
     - remove file or directory
-echo <data> > <path>
+cp <'path from'> <'path to'>
+    - copy file
+echo <data>
     – write to output
 clear
     – clear outputs & commands
+rev
+    - expand string
+    
+programs:
+
+neofetch
+    - system information tool
+*secret*
+    - do not make mistakes in commands!
 `;
 
 const Simulator: React.FC<{
@@ -52,11 +65,20 @@ const Simulator: React.FC<{
   const [outputs, setOutputs] = useState<
     Array<{ output: string; path: string }>
   >(startMessage ? [{ output: startMessage, path: FS.getHome() }] : []);
+  const [currentApp, setCurrentApp] = useState<Applications | undefined>();
   const [homePath, setHomePath] = useState(FS.getHome());
   const [currentPath, setCurrentPath] = useState(FS.getHome());
+  const [value, setValue] = useState<{ [key: string]: any }>({});
   const inputRef = useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const orientation = useMobileOrientation();
+
+  const closeApp = (output?: string) => {
+    if (output) {
+      setOutputs((prevState) => [...prevState, { output, path: currentPath }]);
+    }
+    setCurrentApp(undefined);
+  };
 
   const cutHomePath = (path: string) => {
     if (path.slice(homePath.length).length > 0) {
@@ -118,6 +140,7 @@ const Simulator: React.FC<{
       return;
     }
     const command = commands[commands.length - 1].split(' ');
+
     if (!Object.keys(Commands).includes(command[0].toLowerCase())) {
       setOutputs((prevState) => [
         ...prevState,
@@ -210,6 +233,11 @@ const Simulator: React.FC<{
           { output: '', path: currentPath },
         ]);
         break;
+      case Commands.cp:
+        const args = command.slice(1).join(' ').split("'");
+        const cpFile = FS.readFile(currentPath + '/' + args[1]);
+        FS.write(args[3], cpFile);
+        break;
       case Commands.echo:
         setOutputs((prevState) => [
           ...prevState,
@@ -230,33 +258,47 @@ const Simulator: React.FC<{
         break;
       case Commands.neofetch:
         const deviceData = useDeviceData(window.navigator.userAgent);
-        const neofetchOutput = logo(
+        setValue({
           user,
           name,
-          isBrowser ? 'PC' : 'Mobile',
+          isBrowser: isBrowser ? 'PC' : 'Mobile',
           browserName,
           deviceData,
-          orientation.orientation,
-          {
+          orientation: orientation.orientation,
+          resolution: {
             width: window.screen.width,
             height: window.screen.height,
           },
-          window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'Dark'
-            : 'Light',
-          window.navigator.language,
-          new Date().getTimezoneOffset()
-        );
+        });
+        setCurrentApp(Applications.neofetch);
+        break;
+      case Commands.fs:
+        setCurrentApp(Applications.fs);
         setOutputs((prevState) => [
           ...prevState,
-          { output: neofetchOutput, path: currentPath },
+          { output: '', path: currentPath },
+        ]);
+        break;
+      case Commands.rev:
+        setOutputs((prevState) => [
+          ...prevState,
+          {
+            output: command
+              .slice(1, command.length)
+              .join(' ')
+              .split('')
+              .reverse()
+              .join(''),
+            path: currentPath,
+          },
         ]);
         break;
       case Commands.clear:
         setCommands([]);
-        setOutputs([]);
+        setOutputs(
+          startMessage ? [{ output: startMessage, path: FS.getHome() }] : []
+        );
         setHistoryIndex(0);
-        break;
     }
     setCommands((prevState) => {
       setHistoryIndex(prevState.length);
@@ -264,6 +306,7 @@ const Simulator: React.FC<{
     });
     setTimeout(() => scrollToBottom(), 1);
   };
+
   return (
     <div
       ref={divRef}
@@ -285,52 +328,54 @@ const Simulator: React.FC<{
         inputRef?.current?.focus();
       }}
     >
-      {outputs.map((output, index) => (
-        <div key={index}>
-          <p className={styles.simulator__line}>
-            {!startMessage ||
-              (startMessage && index !== 0 && (
-                <>
-                  <LineStart
-                    user={user}
-                    name={name}
-                    path={
-                      output.path.startsWith(homePath)
-                        ? cutHomePath(output.path)
-                        : output.path
-                    }
-                  />
-                  <span className={styles.simulator__command}>
-                    {commands[startMessage ? index - 1 : index]}
-                  </span>
-                </>
-              ))}
-          </p>
-          <p
-            className={styles.simulator__line}
-            style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
-          >
-            {output.output}
-          </p>
-        </div>
-      ))}
-      <p className={styles.simulator__line}>
-        <LineStart
-          user={user}
-          name={name}
-          path={
-            currentPath.startsWith(homePath)
-              ? cutHomePath(currentPath)
-              : currentPath
-          }
-        />
-        <input
-          ref={inputRef}
-          className={styles.simulator__command}
-          value={commands[commands.length - 1]}
-          onChange={updateCommand}
-        />
-      </p>
+      <AppsProvider closeApp={closeApp} currentApp={currentApp} value={value}>
+        {outputs.map((output, index) => (
+          <div key={index}>
+            <p className={styles.simulator__line}>
+              {!startMessage ||
+                (startMessage && index !== 0 && (
+                  <>
+                    <LineStart
+                      user={user}
+                      name={name}
+                      path={
+                        output.path.startsWith(homePath)
+                          ? cutHomePath(output.path)
+                          : output.path
+                      }
+                    />
+                    <span className={styles.simulator__command}>
+                      {commands[startMessage ? index - 1 : index]}
+                    </span>
+                  </>
+                ))}
+            </p>
+            <p
+              className={styles.simulator__line}
+              style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
+            >
+              {output.output}
+            </p>
+          </div>
+        ))}
+        <p className={styles.simulator__line}>
+          <LineStart
+            user={user}
+            name={name}
+            path={
+              currentPath.startsWith(homePath)
+                ? cutHomePath(currentPath)
+                : currentPath
+            }
+          />
+          <input
+            ref={inputRef}
+            className={styles.simulator__command}
+            value={commands[commands.length - 1]}
+            onChange={updateCommand}
+          />
+        </p>
+      </AppsProvider>
     </div>
   );
 };

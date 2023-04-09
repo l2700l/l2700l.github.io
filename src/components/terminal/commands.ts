@@ -11,4 +11,7 @@ export enum Commands {
   echo = 'echo',
   neofetch = 'neofetch',
   rm = 'rm',
+  cp = 'cp',
+  fs = 'fs',
+  rev = 'rev',
 }
