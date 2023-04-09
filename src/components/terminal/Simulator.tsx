@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { Commands } from './commands';
 import styles from './Simulator.module.scss';
 import LineStart from './LineStart';
-import { home as home } from './fileSystem';
 import { logo } from './logo';
 import {
   browserName,
@@ -10,6 +9,9 @@ import {
   useDeviceData,
   useMobileOrientation,
 } from 'react-device-detect';
+import { FS } from './fs';
+import { home } from './fileSystem';
+FS.import(home);
 const help = `command <required> [optional]
 
 usage:
@@ -25,13 +27,13 @@ whoiam
 mkdir <path>
     – create directory
 nano <path> [data]
-    – create file
+    – write to file
 rm [-R] <path>
     - remove file or directory
 echo <data> > <path>
-    – write to file
+    – write to output
 clear
-    – clear outputs
+    – clear outputs & commands
 `;
 
 const Simulator: React.FC<{
@@ -49,11 +51,20 @@ const Simulator: React.FC<{
   const [, setHistoryIndex] = useState(0);
   const [outputs, setOutputs] = useState<
     Array<{ output: string; path: string }>
-  >(startMessage ? [{ output: startMessage, path: '~' }] : []);
-  const [currentPath, setCurrentPath] = useState('~');
+  >(startMessage ? [{ output: startMessage, path: FS.getHome() }] : []);
+  const [homePath, setHomePath] = useState(FS.getHome());
+  const [currentPath, setCurrentPath] = useState(FS.getHome());
   const inputRef = useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const orientation = useMobileOrientation();
+
+  const cutHomePath = (path: string) => {
+    if (path.slice(homePath.length).length > 0) {
+      return '~/' + path.slice(homePath.length);
+    } else {
+      return '~';
+    }
+  };
 
   const updateCommand = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCommands((prevState) => {
@@ -67,181 +78,20 @@ const Simulator: React.FC<{
     }
   };
 
-  function parsePath(
-    path: string = currentPath.slice(1, currentPath.length)
-  ): {} | Error {
-    let parsedPath: {} = home;
-    let nPath = '';
-    const tokens = path.split('/').filter((token) => token !== '');
-    tokens.forEach((token) => {
-      if (token !== '..') {
-        nPath !== ''
-          ? (nPath += nPath[path.length - 1] === '/' ? token : '/' + token)
-          : (nPath = token);
-        if (typeof parsedPath[token as keyof typeof parsedPath] === 'object') {
-          parsedPath = parsedPath[token as keyof typeof parsedPath];
-        } else {
-          throw new Error();
-        }
-      } else {
-        nPath = nPath
-          .split('/')
-          .slice(0, nPath.split('/').length - 3)
-          .join('/');
-        parsedPath = parsePath(nPath);
-      }
-    });
-    return parsedPath;
-  }
-
-  const ls = (path: string): { [key: string]: 'file' | 'dir' } | Error => {
-    let parsedPath = parsePath(path);
-    const keys = Object.keys(parsedPath);
-    const data: { [key: string]: 'file' | 'dir' } = {};
-    keys.forEach((key) => {
-      // @ts-ignore
-      if (typeof parsedPath[key] === 'object') {
-        data[key] = 'dir';
-      } else {
-        data[key] = 'file';
-      }
-    });
-    return data;
-  };
-
   const cd = (newPath: string): string => {
-    let path = currentPath.slice(1, currentPath.length);
-    if (currentPath === '~' && newPath.startsWith('../')) {
+    if (currentPath === '' && newPath.startsWith('../')) {
       return '';
     }
     try {
       if (newPath !== '') {
-        const tokens = newPath.split('/').filter((token) => token !== '');
-        for (let i = 0; i < tokens.length; i++) {
-          const token = tokens[i];
-          if (token !== '..') {
-            try {
-              const tree = parsePath(path + '/' + token);
-              if (typeof tree === 'object') {
-                path !== '' ? (path += '/' + token) : (path = token);
-                setCurrentPath((prevState) => prevState + '/' + token);
-              } else {
-                throw new Error();
-              }
-            } catch (e) {
-              throw new Error();
-            }
-          } else {
-            path = path
-              .split('/')
-              .slice(0, path.split('/').length - 1)
-              .join('/');
-            setCurrentPath((prevState) => {
-              const newState = prevState
-                .split('/')
-                .slice(0, prevState.split('/').length - 1)
-                .join('/');
-              return newState;
-            });
-          }
-        }
+        setCurrentPath((prevState) =>
+          FS._parsePath(prevState + '/' + newPath).join('/')
+        );
       }
       return '';
     } catch (e) {
       return 'uncorrected path';
     }
-  };
-
-  const cat = (path: string): string => {
-    const paths = (currentPath.slice(1, currentPath.length) + '/' + path).split(
-      '/'
-    );
-    const tree =
-      paths.length > 1
-        ? parsePath(paths.slice(0, paths.length - 1).join('/'))
-        : parsePath();
-    if (
-      tree[paths[paths.length - 1] as keyof typeof tree] &&
-      typeof tree[paths[paths.length - 1] as keyof typeof tree] === 'string'
-    ) {
-      return tree[paths[paths.length - 1] as keyof typeof tree] as string;
-    }
-    return 'uncorrected or empty file';
-  };
-
-  const create = (path: string, data: any): string => {
-    const paths = (currentPath.slice(1, currentPath.length) + '/' + path).split(
-      '/'
-    );
-    const tree =
-      paths.length > 1
-        ? parsePath(paths.slice(0, paths.length - 1).join('/'))
-        : parsePath();
-    if (!tree[paths[paths.length - 1] as keyof typeof tree]) {
-      // @ts-ignore
-      tree[paths[paths.length - 1] as keyof typeof tree] = data;
-      return '';
-    } else {
-      return 'uncorrected path';
-    }
-  };
-
-  const rm = (path: string, recursion?: boolean) => {
-    const paths = (currentPath.slice(1, currentPath.length) + '/' + path).split(
-      '/'
-    );
-    const tree =
-      paths.length > 1
-        ? parsePath(paths.slice(0, paths.length - 1).join('/'))
-        : parsePath();
-    if (tree[paths[paths.length - 1] as keyof typeof tree]) {
-      // @ts-ignore
-      if (
-        typeof tree[paths[paths.length - 1] as keyof typeof tree] ===
-          'object' &&
-        recursion
-      ) {
-        delete tree[paths[paths.length - 1] as keyof typeof tree];
-      } else if (
-        typeof tree[paths[paths.length - 1] as keyof typeof tree] ===
-          'object' &&
-        !recursion
-      ) {
-        return 'this is a directory, use the -R flag to remove directories\n';
-      } else {
-        delete tree[paths[paths.length - 1] as keyof typeof tree];
-      }
-      return '';
-    } else {
-      return 'uncorrected path';
-    }
-  };
-
-  const echo = (path: string, data: string): string => {
-    const paths = (currentPath.slice(1, currentPath.length) + '/' + path).split(
-      '/'
-    );
-    const tree =
-      paths.length > 1
-        ? parsePath(paths.slice(0, paths.length - 1).join('/'))
-        : parsePath();
-    if (
-      typeof tree[paths[paths.length - 1] as keyof typeof tree] === 'string'
-    ) {
-      // @ts-ignore
-      tree[paths[paths.length - 1] as keyof typeof tree] = data;
-      return '';
-    } else {
-      return 'uncorrected path';
-    }
-  };
-
-  const mkdir = (path: string): string => {
-    return create(path, {});
-  };
-
-  const nano = (path: string, data: string = ''): string => {
-    return create(path, data);
   };
 
   const execute = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -310,16 +160,16 @@ const Simulator: React.FC<{
         break;
       case Commands.ls:
         try {
-          const data = ls(
-            currentPath.slice(1, currentPath.length) + '/' + (command[1] || '')
+          const data = FS.getFolder(
+            currentPath + '/' + command.slice(1, command.length).join(' ')
           );
-          const output: Array<string> = [];
+          const lsOutput: Array<string> = [];
           Object.keys(data).forEach((key) => {
-            output.push(key);
+            lsOutput.push(key);
           });
           setOutputs((prevState) => [
             ...prevState,
-            { output: output.join('    '), path: currentPath },
+            { output: lsOutput.join('    '), path: currentPath },
           ]);
         } catch (e) {
           setOutputs((prevState) => [
@@ -335,7 +185,9 @@ const Simulator: React.FC<{
         ]);
         break;
       case Commands.cat:
-        const catOutput = cat(command.slice(1, command.length).join(' '));
+        const catOutput = FS.readFile(
+          currentPath + '/' + command.slice(1, command.length).join(' ')
+        );
         setOutputs((prevState) => [
           ...prevState,
           {
@@ -345,44 +197,35 @@ const Simulator: React.FC<{
         ]);
         break;
       case Commands.mkdir:
-        const mkdirOutput = mkdir(command[1]);
+        FS.write(currentPath + '/' + command[1], {});
         setOutputs((prevState) => [
           ...prevState,
-          { output: mkdirOutput, path: currentPath },
+          { output: '', path: currentPath },
         ]);
         break;
       case Commands.nano:
-        const nanoOutput = nano(
-          command[1],
-          command.slice(2, command.length).join(' ') || ''
-        );
+        FS.write(command[1], command.slice(2, command.length).join(' ') || '');
         setOutputs((prevState) => [
           ...prevState,
-          { output: nanoOutput, path: currentPath },
+          { output: '', path: currentPath },
         ]);
         break;
       case Commands.echo:
-        const args = command.slice(1, command.length).join(' ').split(' > ');
-        if (args.length < 2) {
-          setOutputs((prevState) => [
-            ...prevState,
-            { output: 'syntax error', path: currentPath },
-          ]);
-          break;
-        }
-        const echoOutput = echo(args[1], args[0]);
         setOutputs((prevState) => [
           ...prevState,
-          { output: echoOutput, path: currentPath },
+          {
+            output: command.slice(1, command.length).join(' '),
+            path: currentPath,
+          },
         ]);
         break;
       case Commands.rm:
         const recursion = command.length === 3 && command[1] === '-R';
         const rmPath = command.length === 3 ? command[2] : command[1];
-        const rmOutput = rm(rmPath, recursion);
+        const rmOutput = FS.remove(currentPath + '/' + rmPath, recursion);
         setOutputs((prevState) => [
           ...prevState,
-          { output: rmOutput, path: currentPath },
+          { output: rmOutput || '', path: currentPath },
         ]);
         break;
       case Commands.neofetch:
@@ -448,7 +291,15 @@ const Simulator: React.FC<{
             {!startMessage ||
               (startMessage && index !== 0 && (
                 <>
-                  <LineStart user={user} name={name} path={output.path} />
+                  <LineStart
+                    user={user}
+                    name={name}
+                    path={
+                      output.path.startsWith(homePath)
+                        ? cutHomePath(output.path)
+                        : output.path
+                    }
+                  />
                   <span className={styles.simulator__command}>
                     {commands[startMessage ? index - 1 : index]}
                   </span>
@@ -464,7 +315,15 @@ const Simulator: React.FC<{
         </div>
       ))}
       <p className={styles.simulator__line}>
-        <LineStart user={user} name={name} path={currentPath} />
+        <LineStart
+          user={user}
+          name={name}
+          path={
+            currentPath.startsWith(homePath)
+              ? cutHomePath(currentPath)
+              : currentPath
+          }
+        />
         <input
           ref={inputRef}
           className={styles.simulator__command}
