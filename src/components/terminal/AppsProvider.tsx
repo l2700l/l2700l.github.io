@@ -36,7 +36,7 @@ const AppsProvider: React.FC<
         );
         break;
       case Applications.fs:
-        return SlApplication().open(closeApp);
+        return SlApplication().open();
         break;
       default:
         return children;

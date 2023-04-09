@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { TerminalContext } from '../../TerminalContext';
 
 const trainLocomotive = `
     ====        ________                ___________
@@ -38,8 +39,9 @@ const trainWheels = [
 ];
 let wheelIndex = 0;
 
-const Sl: React.FC<{close: (output?: string) => void}> = ({close}, context) => {
+const Sl = () => {
   const divRef = useRef<HTMLDivElement>(null);
+  const {closeApp} = useContext(TerminalContext)
   const pRef = useRef<HTMLParagraphElement>(null);
   const [train, setTrain] = useState(trainLocomotive + trainWheels[wheelIndex]);
   const [left, setLeft] = useState(0)
@@ -52,13 +54,16 @@ const Sl: React.FC<{close: (output?: string) => void}> = ({close}, context) => {
         const newState = prevState - 10
         if (newState <= ((pRef?.current?.clientWidth || 0)*-1)-10) {
           clearInterval(interval);
-          close();
+          closeApp();
         }
         return newState
       })
       setTrain(trainLocomotive + trainWheels[wheelIndex]);
     }, 50);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval)
+      closeApp();
+    };
   }, []);
   return (
     <div ref={divRef} style={{ width: '100%', position: 'relative' }}>
