@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Commands } from './commands';
 import styles from './Simulator.module.scss';
 import LineStart from './LineStart';
@@ -12,6 +12,7 @@ import { FS } from './fs';
 import { home } from './fileSystem';
 import AppsProvider from './AppsProvider';
 import { Applications } from './applications/applicationsEnum';
+import { TerminalContext } from './TerminalContext';
 
 FS.import(home);
 const help = `command <required> [optional]
@@ -28,8 +29,6 @@ whoiam
     – show user
 mkdir <path>
     – create directory
-nano <path> [data]
-    – write to file
 rm [-R] <path>
     - remove file or directory
 cp <'path from'> <'path to'>
@@ -45,6 +44,8 @@ programs:
 
 neofetch
     - system information tool
+nano [path]
+    – write to file
 *secret*
     - do not make mistakes in commands!
 `;
@@ -66,7 +67,7 @@ const Simulator: React.FC<{
     Array<{ output: string; path: string }>
   >(startMessage ? [{ output: startMessage, path: FS.getHome() }] : []);
   const [currentApp, setCurrentApp] = useState<Applications | undefined>();
-  const [homePath, setHomePath] = useState(FS.getHome());
+  const [homePath] = useState(FS.getHome());
   const [currentPath, setCurrentPath] = useState(FS.getHome());
   const [value, setValue] = useState<{ [key: string]: any }>({});
   const inputRef = useRef<HTMLInputElement>(null);
@@ -227,11 +228,21 @@ const Simulator: React.FC<{
         ]);
         break;
       case Commands.nano:
-        FS.write(command[1], command.slice(2, command.length).join(' ') || '');
-        setOutputs((prevState) => [
-          ...prevState,
-          { output: '', path: currentPath },
-        ]);
+        let prevData: string = '';
+        try {
+          prevData = FS.readFile(
+            currentPath + '/' + command.slice(1, command.length).join(' ')
+          );
+        } catch (e) {}
+        let prevPath =
+          command.length > 1
+            ? currentPath + '/' + command.slice(1, command.length).join(' ')
+            : undefined;
+        setValue({
+          path: prevPath,
+          prevData: prevData !== 'Uncorrected path' ? prevData : '',
+        });
+        setCurrentApp(Applications.nano);
         break;
       case Commands.cp:
         const args = command.slice(1).join(' ').split("'");
@@ -272,8 +283,8 @@ const Simulator: React.FC<{
         });
         setCurrentApp(Applications.neofetch);
         break;
-      case Commands.fs:
-        setCurrentApp(Applications.fs);
+      case Commands.sl:
+        setCurrentApp(Applications.sl);
         setOutputs((prevState) => [
           ...prevState,
           { output: '', path: currentPath },
@@ -328,54 +339,56 @@ const Simulator: React.FC<{
         inputRef?.current?.focus();
       }}
     >
-      <AppsProvider closeApp={closeApp} currentApp={currentApp} value={value}>
-        {outputs.map((output, index) => (
-          <div key={index}>
-            <p className={styles.simulator__line}>
-              {!startMessage ||
-                (startMessage && index !== 0 && (
-                  <>
-                    <LineStart
-                      user={user}
-                      name={name}
-                      path={
-                        output.path.startsWith(homePath)
-                          ? cutHomePath(output.path)
-                          : output.path
-                      }
-                    />
-                    <span className={styles.simulator__command}>
-                      {commands[startMessage ? index - 1 : index]}
-                    </span>
-                  </>
-                ))}
-            </p>
-            <p
-              className={styles.simulator__line}
-              style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
-            >
-              {output.output}
-            </p>
-          </div>
-        ))}
-        <p className={styles.simulator__line}>
-          <LineStart
-            user={user}
-            name={name}
-            path={
-              currentPath.startsWith(homePath)
-                ? cutHomePath(currentPath)
-                : currentPath
-            }
-          />
-          <input
-            ref={inputRef}
-            className={styles.simulator__command}
-            value={commands[commands.length - 1]}
-            onChange={updateCommand}
-          />
-        </p>
-      </AppsProvider>
+      <TerminalContext.Provider value={{ ...value, closeApp, currentApp }}>
+        <AppsProvider closeApp={closeApp} currentApp={currentApp} value={value}>
+          {outputs.map((output, index) => (
+            <div key={index}>
+              <p className={styles.simulator__line}>
+                {!startMessage ||
+                  (startMessage && index !== 0 && (
+                    <>
+                      <LineStart
+                        user={user}
+                        name={name}
+                        path={
+                          output.path.startsWith(homePath)
+                            ? cutHomePath(output.path)
+                            : output.path
+                        }
+                      />
+                      <span className={styles.simulator__command}>
+                        {commands[startMessage ? index - 1 : index]}
+                      </span>
+                    </>
+                  ))}
+              </p>
+              <p
+                className={styles.simulator__line}
+                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
+              >
+                {output.output}
+              </p>
+            </div>
+          ))}
+          <p className={styles.simulator__line}>
+            <LineStart
+              user={user}
+              name={name}
+              path={
+                currentPath.startsWith(homePath)
+                  ? cutHomePath(currentPath)
+                  : currentPath
+              }
+            />
+            <input
+              ref={inputRef}
+              className={styles.simulator__command}
+              value={commands[commands.length - 1]}
+              onChange={updateCommand}
+            />
+          </p>
+        </AppsProvider>
+      </TerminalContext.Provider>
     </div>
   );
 };

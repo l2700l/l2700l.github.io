@@ -1,22 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import { Applications } from './applications/applicationsEnum';
 import { NeofetchApplication } from './applications/neofetch/neofetch.application';
-import { TerminalContext } from './TerminalContext';
 import { SlApplication } from './applications/sl/sl.application';
+import { NanoApplication } from './applications/nano/nano.application';
 
-const AppsProvider: React.FC<
-  React.HtmlHTMLAttributes<HTMLDivElement> & {
-    value: { [key: string]: any };
-    currentApp: Applications | undefined;
-    closeApp: (output?: string) => void;
-  }
-> = ({ value, children, currentApp, closeApp }) => {
+// @ts-ignore
+const AppsProvider: React.FC<{
+  value: { [key: string]: any };
+  currentApp: Applications | undefined;
+  closeApp: (output?: string) => void;
+  children: ReactNode | undefined;
+}> = ({ value, children, currentApp, closeApp }) => {
   const switchApp = () => {
     if (currentApp === undefined) return children;
     switch (currentApp) {
       case Applications.nano:
         // TODO: realize nano app
-        return <div></div>;
+        return NanoApplication().open();
       case Applications.neofetch:
         closeApp(
           NeofetchApplication().open(
@@ -34,21 +34,14 @@ const AppsProvider: React.FC<
             new Date().getTimezoneOffset()
           ) as string
         );
-        break;
-      case Applications.fs:
+        return children;
+      case Applications.sl:
         return SlApplication().open();
-        break;
       default:
         return children;
     }
   };
-  return (
-    <TerminalContext.Provider
-      value={{ ...value, currentApp, closeApp: closeApp }}
-    >
-      {switchApp()}
-    </TerminalContext.Provider>
-  );
+  return <>{switchApp()}</>;
 };
 
 export default AppsProvider;

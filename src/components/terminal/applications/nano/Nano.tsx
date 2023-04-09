@@ -14,21 +14,23 @@ const Nano = () => {
   const [buttonsMode, setButtonsMode] = useState<'global' | 'write' | 'exit'>(
     'global'
   );
-
   const checkCommand = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.code === 'KeyY') {
       if (buttonsMode === 'exit') {
-        closeApp();
+        setButtonsMode('global');
       }
     }
     if (e.code === 'KeyN') {
       if (buttonsMode === 'exit') {
-        setButtonsMode('global');
+        closeApp();
       }
     }
     if (e.code === 'Enter') {
       if (buttonsMode !== 'global') {
         FS.write(filepath, data);
+        if (path && filepath !== path) {
+          FS.remove(path);
+        }
         closeApp();
       }
     }

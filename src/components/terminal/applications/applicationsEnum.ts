@@ -1,5 +1,5 @@
 export enum Applications {
   nano,
   neofetch,
-  fs,
+  sl,
 }
