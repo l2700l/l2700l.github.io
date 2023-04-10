@@ -17,7 +17,8 @@ $pathText: #FF479C;
 .simulator__line {
     display: flex;
     width: 100%;
-    white-space: nowrap;
+    white-space: pre;
+    position: relative;
 }
 .simulator__user {
     color: $userText;

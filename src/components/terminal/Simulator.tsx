@@ -1,7 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { ReactNode, useRef, useState } from 'react';
 import { Commands } from './commands';
 import styles from './Simulator.module.scss';
-import LineStart from './LineStart';
 import {
   browserName,
   isBrowser,
@@ -13,8 +12,11 @@ import { home } from './fileSystem';
 import AppsProvider from './AppsProvider';
 import { Applications } from './applications/applicationsEnum';
 import { TerminalContext } from './TerminalContext';
+import Output from './lines/Output';
+import Input from './lines/Input';
 
 FS.import(home);
+
 const help = `command <required> [optional]
 
 usage:
@@ -60,11 +62,19 @@ const Simulator: React.FC<{
     bottomRight?: string;
   };
   startMessage?: string;
-}> = ({ user = 'user', name = 'computer', borderRadius, startMessage }) => {
+  prompt?: string;
+}> = ({
+  user = 'user',
+  name = 'computer',
+  prompt = '$',
+  borderRadius,
+  startMessage,
+}) => {
   const [commands, setCommands] = useState<Array<string>>([]);
+  const [updatedCommand, setUpdatedCommand] = useState<string | undefined>();
   const [, setHistoryIndex] = useState(0);
   const [outputs, setOutputs] = useState<
-    Array<{ output: string; path: string }>
+    Array<{ output: ReactNode; path: string }>
   >(startMessage ? [{ output: startMessage, path: FS.getHome() }] : []);
   const [currentApp, setCurrentApp] = useState<Applications | undefined>();
   const [homePath] = useState(FS.getHome());
@@ -89,12 +99,6 @@ const Simulator: React.FC<{
     }
   };
 
-  const updateCommand = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCommands((prevState) => {
-      return [...prevState.slice(0, prevState.length - 1), e.target.value];
-    });
-  };
-
   const scrollToBottom = () => {
     if (divRef?.current !== undefined) {
       divRef!.current!.scrollTop = divRef?.current?.scrollHeight || 0;
@@ -117,44 +121,42 @@ const Simulator: React.FC<{
     }
   };
 
-  const execute = (e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleHistory = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowUp') {
       setHistoryIndex((prevState) => {
         const state = prevState > 1 ? prevState - 1 : 0;
-        setCommands((prevState) => {
-          return [...prevState.slice(0, prevState.length - 1), commands[state]];
-        });
+        setUpdatedCommand(commands[state]);
         return state;
       });
     }
     if (e.key === 'ArrowDown') {
       setHistoryIndex((prevState) => {
         const state =
-          prevState > commands.length - 1 ? commands.length - 1 : prevState + 1;
-        setCommands((prevState) => {
-          return [...prevState.slice(0, prevState.length - 1), commands[state]];
-        });
+          prevState >= commands.length - 1
+            ? commands.length - 1
+            : prevState + 1;
+        setUpdatedCommand(commands[state]);
         return state;
       });
     }
-    if (e.key !== 'Enter') {
-      return;
-    }
-    const command = commands[commands.length - 1].split(' ');
+  };
 
-    if (!Object.keys(Commands).includes(command[0].toLowerCase())) {
+  const execute = (command: string) => {
+    const commandArray = command.split(' ');
+    if (!Object.keys(Commands).includes(commandArray[0].toLowerCase())) {
       setOutputs((prevState) => [
         ...prevState,
-        { output: 'command not found: ' + command[0], path: currentPath },
+        { output: 'command not found: ' + commandArray[0], path: currentPath },
       ]);
       setCommands((prevState) => {
-        setHistoryIndex(prevState.length);
-        return [...prevState, ''];
+        setHistoryIndex(prevState.length + 1);
+        return [...prevState, commandArray[0]];
       });
+      setUpdatedCommand(undefined);
       setTimeout(() => scrollToBottom(), 1);
       return;
     }
-    switch (Commands[command[0].toLowerCase() as keyof typeof Commands]) {
+    switch (Commands[commandArray[0].toLowerCase() as keyof typeof Commands]) {
       case Commands.empty:
         setOutputs((prevState) => [
           ...prevState,
@@ -168,7 +170,7 @@ const Simulator: React.FC<{
         ]);
         break;
       case Commands.cd:
-        const path = command[1];
+        const path = commandArray[1];
         if (!path) {
           setOutputs((prevState) => [
             ...prevState,
@@ -185,7 +187,9 @@ const Simulator: React.FC<{
       case Commands.ls:
         try {
           const data = FS.getFolder(
-            currentPath + '/' + command.slice(1, command.length).join(' ')
+            currentPath +
+              '/' +
+              commandArray.slice(1, commandArray.length).join(' ')
           );
           const lsOutput: Array<string> = [];
           Object.keys(data).forEach((key) => {
@@ -210,7 +214,9 @@ const Simulator: React.FC<{
         break;
       case Commands.cat:
         const catOutput = FS.readFile(
-          currentPath + '/' + command.slice(1, command.length).join(' ')
+          currentPath +
+            '/' +
+            commandArray.slice(1, commandArray.length).join(' ')
         );
         setOutputs((prevState) => [
           ...prevState,
@@ -221,7 +227,7 @@ const Simulator: React.FC<{
         ]);
         break;
       case Commands.mkdir:
-        FS.write(currentPath + '/' + command[1], {});
+        FS.write(currentPath + '/' + commandArray[1], {});
         setOutputs((prevState) => [
           ...prevState,
           { output: '', path: currentPath },
@@ -231,12 +237,16 @@ const Simulator: React.FC<{
         let prevData: string = '';
         try {
           prevData = FS.readFile(
-            currentPath + '/' + command.slice(1, command.length).join(' ')
+            currentPath +
+              '/' +
+              commandArray.slice(1, commandArray.length).join(' ')
           );
         } catch (e) {}
         let prevPath =
-          command.length > 1
-            ? currentPath + '/' + command.slice(1, command.length).join(' ')
+          commandArray.length > 1
+            ? currentPath +
+              '/' +
+              commandArray.slice(1, commandArray.length).join(' ')
             : undefined;
         setValue({
           path: prevPath,
@@ -245,7 +255,7 @@ const Simulator: React.FC<{
         setCurrentApp(Applications.nano);
         break;
       case Commands.cp:
-        const args = command.slice(1).join(' ').split("'");
+        const args = commandArray.slice(1).join(' ').split("'");
         const cpFile = FS.readFile(currentPath + '/' + args[1]);
         FS.write(args[3], cpFile);
         break;
@@ -253,14 +263,15 @@ const Simulator: React.FC<{
         setOutputs((prevState) => [
           ...prevState,
           {
-            output: command.slice(1, command.length).join(' '),
+            output: commandArray.slice(1, commandArray.length).join(' '),
             path: currentPath,
           },
         ]);
         break;
       case Commands.rm:
-        const recursion = command.length === 3 && command[1] === '-R';
-        const rmPath = command.length === 3 ? command[2] : command[1];
+        const recursion = commandArray.length === 3 && commandArray[1] === '-R';
+        const rmPath =
+          commandArray.length === 3 ? commandArray[2] : commandArray[1];
         const rmOutput = FS.remove(currentPath + '/' + rmPath, recursion);
         setOutputs((prevState) => [
           ...prevState,
@@ -294,8 +305,8 @@ const Simulator: React.FC<{
         setOutputs((prevState) => [
           ...prevState,
           {
-            output: command
-              .slice(1, command.length)
+            output: commandArray
+              .slice(1, commandArray.length)
               .join(' ')
               .split('')
               .reverse()
@@ -310,11 +321,13 @@ const Simulator: React.FC<{
           startMessage ? [{ output: startMessage, path: FS.getHome() }] : []
         );
         setHistoryIndex(0);
+        break;
     }
     setCommands((prevState) => {
-      setHistoryIndex(prevState.length);
-      return [...prevState, ''];
+      setHistoryIndex(prevState.length + 1);
+      return [...prevState, commandArray[0]];
     });
+    setUpdatedCommand(undefined);
     setTimeout(() => scrollToBottom(), 1);
   };
 
@@ -334,7 +347,7 @@ const Simulator: React.FC<{
           ? borderRadius?.bottomRight
           : 0,
       }}
-      onKeyDownCapture={execute}
+      onKeyDownCapture={handleHistory}
       onClick={() => {
         inputRef?.current?.focus();
       }}
@@ -342,51 +355,37 @@ const Simulator: React.FC<{
       <TerminalContext.Provider value={{ ...value, closeApp, currentApp }}>
         <AppsProvider closeApp={closeApp} currentApp={currentApp} value={value}>
           {outputs.map((output, index) => (
-            <div key={index}>
-              <p className={styles.simulator__line}>
-                {!startMessage ||
-                  (startMessage && index !== 0 && (
-                    <>
-                      <LineStart
-                        user={user}
-                        name={name}
-                        path={
-                          output.path.startsWith(homePath)
-                            ? cutHomePath(output.path)
-                            : output.path
-                        }
-                      />
-                      <span className={styles.simulator__command}>
-                        {commands[startMessage ? index - 1 : index]}
-                      </span>
-                    </>
-                  ))}
-              </p>
-              <p
-                className={styles.simulator__line}
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}
-              >
-                {output.output}
-              </p>
-            </div>
-          ))}
-          <p className={styles.simulator__line}>
-            <LineStart
+            <Output
+              key={index}
               user={user}
               name={name}
+              path={
+                output.path.startsWith(homePath)
+                  ? cutHomePath(output.path)
+                  : output.path
+              }
+              lineStart={!startMessage || index !== 0}
+              command={startMessage ? commands[index - 1] : commands[index]}
+              prompt={prompt}
+            >
+              {output.output}
+            </Output>
+          ))}
+          <div>
+            <Input
+              user={user}
+              name={name}
+              ref={inputRef}
               path={
                 currentPath.startsWith(homePath)
                   ? cutHomePath(currentPath)
                   : currentPath
               }
+              execute={execute}
+              updatedCommand={updatedCommand}
+              prompt={prompt}
             />
-            <input
-              ref={inputRef}
-              className={styles.simulator__command}
-              value={commands[commands.length - 1]}
-              onChange={updateCommand}
-            />
-          </p>
+          </div>
         </AppsProvider>
       </TerminalContext.Provider>
     </div>
