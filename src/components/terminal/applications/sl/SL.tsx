@@ -1,5 +1,50 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TerminalContext } from '../../TerminalContext';
+import styles from './SL.module.scss';
+const trainSmokes = [
+`                       (@@) (  ) (@)  ( )  @@    ()    @     O     @
+                  (   )
+          (@@@@)
+      (    )
+
+    (@@@)
+`,
+`                       (@@) (  ) (@)  ( )  @@    ()    @     O     @
+                  (   )
+          (@@@@)
+      (    )
+
+    (@@@)
+`,
+`                       (@@) (  ) (@)  ( )  @@    ()    @     O     @
+                  (   )
+          (@@@@)
+      (    )
+
+    (@@@)
+`,
+`                       (  ) (@@) ( )  (@)  ()    @@    O     @     O     @
+                  (@@@)
+          (    )
+      (@@@@)
+  
+    (   )
+`,
+`                       (  ) (@@) ( )  (@)  ()    @@    O     @     O     @
+                  (@@@)
+          (    )
+      (@@@@)
+  
+    (   )
+`,
+`                       (  ) (@@) ( )  (@)  ()    @@    O     @     O     @
+                  (@@@)
+          (    )
+      (@@@@)
+  
+    (   )
+`
+]
 
 const trainLocomotive = `
     ====        ________                ___________
@@ -38,18 +83,21 @@ const trainWheels = [
 `,
 ];
 let wheelIndex = 0;
+let smokeIndex = 0;
 
 const Sl = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const {closeApp} = useContext(TerminalContext)
   const pRef = useRef<HTMLParagraphElement>(null);
-  const [train, setTrain] = useState(trainLocomotive + trainWheels[wheelIndex]);
+  const [train, setTrain] = useState(trainSmokes[smokeIndex] + trainLocomotive + trainWheels[wheelIndex]);
   const [left, setLeft] = useState(0)
   useEffect(() => {
     setLeft(divRef?.current?.clientWidth || 0)
     const interval = setInterval(() => {
       if (wheelIndex < trainWheels.length - 1) wheelIndex++;
       else wheelIndex = 0;
+      if (smokeIndex < trainSmokes.length - 1) smokeIndex++;
+      else smokeIndex = 0;
       setLeft(prevState => {
         const newState = prevState - 10
         if (newState <= ((pRef?.current?.clientWidth || 0)*-1)-10) {
@@ -58,7 +106,7 @@ const Sl = () => {
         }
         return newState
       })
-      setTrain(trainLocomotive + trainWheels[wheelIndex]);
+      setTrain(trainSmokes[smokeIndex] + trainLocomotive + trainWheels[wheelIndex]);
     }, 50);
     return () => {
       clearInterval(interval)
@@ -66,8 +114,8 @@ const Sl = () => {
     };
   }, []);
   return (
-    <div ref={divRef} style={{ width: '100%', position: 'relative' }}>
-      <p ref={pRef} style={{ whiteSpace: 'pre', fontFamily: 'Consola Mono', position: 'absolute', left: left}}>{train}</p>
+    <div ref={divRef} className={styles.sl}>
+      <p ref={pRef} className={styles.sl__train} style={{ left: left}}>{train}</p>
     </div>
   );
 };
