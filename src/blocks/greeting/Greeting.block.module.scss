@@ -34,15 +34,19 @@
 .greeting_block_fill {
   --i: 0s;
   overflow: hidden;
-  color: white;
   text-shadow: 0 0 3px rgba(255,255,255,.5);
-  background: url(https://i.ibb.co/RDTnNrT/animated-text-fill.png) repeat-y;
+  background: url('../../images/animated-text-fill-dark.png') repeat-y;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-animation: fill 80s linear infinite;
   -webkit-transform: translate3d(0,0,0);
   -webkit-backface-visibility: hidden;
+  @media (prefers-color-scheme: light) {
+    background: url('../../images/animates-text-fill-light.png') repeat-y;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
 }
 
 @-webkit-keyframes fill {

@@ -3,4 +3,8 @@
   padding: .5rem 1rem;
   border-radius: 1.5rem;
   box-shadow: 0 0 10px rgba(84, 84, 84, 0.75);
+  @media (prefers-color-scheme: light) {
+    background: #c7cbff;
+    box-shadow: 0 0 10px rgba(206, 205, 217, 0.75);
+  }
 }

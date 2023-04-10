@@ -7,6 +7,9 @@ $terminalText: #959199;
   border: 1px solid $terminalBackground;
   height: 100%;
   border-radius: 0.5rem;
+  @media (prefers-color-scheme: light) {
+    box-shadow: 0 0 10px 4px #989898;
+  }
 }
 .terminal__top {
   display: flex;
