@@ -3,6 +3,7 @@ import { Applications } from './applications/applicationsEnum';
 import { NeofetchApplication } from './applications/neofetch/neofetch.application';
 import { SlApplication } from './applications/sl/sl.application';
 import { NanoApplication } from './applications/nano/nano.application';
+import { CowSayApplication } from './applications/cowsay/cowsay.application';
 
 // @ts-ignore
 const AppsProvider: React.FC<{
@@ -37,6 +38,10 @@ const AppsProvider: React.FC<{
         return children;
       case Applications.sl:
         return SlApplication().open();
+      case Applications.cowsay:
+        return closeApp(
+          CowSayApplication().open(value.message, value.character) as string
+        );
       default:
         return children;
     }

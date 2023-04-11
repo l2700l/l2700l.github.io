@@ -14,4 +14,5 @@ export enum Commands {
   cp = 'cp',
   sl = 'sl',
   rev = 'rev',
+  cowsay = 'cowsay',
 }

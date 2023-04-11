@@ -48,6 +48,8 @@ neofetch
     - system information tool
 nano [path]
     – write to file
+cowsay <text> [--character cow|fox|tux]
+    - talking cow, what?
 *secret*
     - do not make mistakes in commands!
 `;
@@ -314,10 +316,31 @@ const Simulator: React.FC<{
         break;
       case Commands.sl:
         setCurrentApp(Applications.sl);
-        setOutputs((prevState) => [
-          ...prevState,
-          { output: '', path: currentPath },
-        ]);
+        break;
+      case Commands.cowsay:
+        const cowsayArgs = commandArray
+          .slice(1)
+          .join(' ')
+          .split(' --character ');
+        if (cowsayArgs[0] !== '') {
+          setValue({ message: cowsayArgs[0], character: cowsayArgs[1] });
+          setCurrentApp(Applications.cowsay);
+          setCommands((prevState) => {
+            setHistoryIndex(prevState.length + 1);
+            return [
+              ...prevState,
+              commandArray[0] + ' ' + cowsayArgs.join(' --character '),
+            ];
+          });
+          setUpdatedCommand(undefined);
+          setTimeout(() => scrollToBottom(), 1);
+          return;
+        } else {
+          setOutputs((prevState) => [
+            ...prevState,
+            { output: 'message not provided', path: currentPath },
+          ]);
+        }
         break;
       case Commands.rev:
         setOutputs((prevState) => [
