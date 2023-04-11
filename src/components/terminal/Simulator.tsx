@@ -423,7 +423,7 @@ const Simulator: React.FC<{
               {output.output}
             </Output>
           ))}
-          <div>
+          <div style={{ display: 'flex' }}>
             <Input
               user={user}
               name={name}
