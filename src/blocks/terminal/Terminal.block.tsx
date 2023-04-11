@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './Terminal.block.module.scss';
 import { Terminal } from '../../components/terminal';
+import { home } from './fileSystem';
 
 const startMessage = `
     ██╗     ██████╗ ███████╗ ██████╗  ██████╗ ██╗
@@ -35,7 +36,12 @@ const TerminalBlock: React.FC<{ user: string; name: string }> = ({
         .
       </h3>
       <div style={{ width: '100%', height: '80%' }}>
-        <Terminal startMessage={startMessage} user={user} name={name} />
+        <Terminal
+          fs={home}
+          startMessage={startMessage}
+          user={user}
+          name={name}
+        />
       </div>
     </>
   );

@@ -8,6 +8,7 @@
     outline: none;
   }
 }
+
 .nano__info {
   padding-left: .35rem;
   position: relative;
@@ -24,6 +25,7 @@
     right: 5%;
   }
 }
+
 .nano__textArea {
   width: 100%;
   height: 80%;
@@ -37,6 +39,7 @@
   -moz-box-shadow: none;
   box-shadow: none;
 }
+
 .nano__commands {
   display: flex;
   flex-flow: row wrap;
@@ -47,8 +50,8 @@
     width: 8cap;
     height: fit-content;
   }
-
 }
+
 .nano__commands_vertical {
   flex-direction: column;
 }

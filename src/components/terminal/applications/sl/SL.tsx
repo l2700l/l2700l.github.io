@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { TerminalContext } from '../../TerminalContext';
+import React, { useEffect, useRef, useState } from 'react';
+import { useTerminalContext } from '../../hooks/TerminalContext';
 import styles from './SL.module.scss';
 const trainSmokes = [
 `                       (@@) (  ) (@)  ( )  @@    ()    @     O     @
@@ -87,7 +87,7 @@ let smokeIndex = 0;
 
 const Sl = () => {
   const divRef = useRef<HTMLDivElement>(null);
-  const {closeApp} = useContext(TerminalContext)
+  const {closeApp} = useTerminalContext()
   const pRef = useRef<HTMLParagraphElement>(null);
   const [train, setTrain] = useState(trainSmokes[smokeIndex] + trainLocomotive + trainWheels[wheelIndex]);
   const [left, setLeft] = useState(0)

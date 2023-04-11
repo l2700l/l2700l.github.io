@@ -1,5 +1,3 @@
-
-
 .simulator {
     --simulatorBackground: #282A34;
     --computerTextColor: #5FBDAD;
@@ -18,29 +16,40 @@
     overflow-x: hidden;
     padding: 0.5rem;
 }
+
 .simulator__line {
     display: flex;
     width: 100%;
     white-space: pre;
     position: relative;
 }
+
 .simulator__user {
     color: var(--userTextColor);
 }
+
 .simulator__computer {
     color: var(--computerTextColor);
 }
+
 .simulator__at {
     color: var(--atTextColor);
 }
+
 .simulator__path {
     color: var(--pathTextColor);
 }
+
 .simulator__command {
     color: var(--commandTextColor);
     background-color: var(--simulatorBackground);
     margin-left: 1rem;
 }
+
+.simulator__input {
+    display: flex;
+}
+
 input.simulator__command {
     font-family: inherit;
     border-top-style: hidden;

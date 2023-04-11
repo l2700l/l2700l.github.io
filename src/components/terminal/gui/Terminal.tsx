@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Terminal.module.scss';
-import Simulator from './Simulator';
+import Simulator from '../simulator/Simulator';
 const Terminal: React.FC<{
   user?: string;
   name?: string;
   startMessage?: string;
-}> = ({ user = 'user', name = 'computer', startMessage }) => {
+  fs?: Record<string, any>;
+}> = ({ user = 'user', name = 'computer', startMessage, fs }) => {
   const [orientation, setOrientation] = useState<'landscape' | 'portrait'>(
     window.innerWidth > window.innerHeight ? 'landscape' : 'portrait'
   );
@@ -54,6 +55,7 @@ const Terminal: React.FC<{
           <Simulator
             name={name}
             user={user}
+            fs={fs}
             borderRadius={{ bottomLeft: '0.5rem', bottomRight: '0.5rem' }}
             startMessage={startMessage}
           />

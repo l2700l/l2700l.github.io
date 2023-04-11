@@ -1,10 +1,10 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styles from './Nano.module.scss';
-import { TerminalContext } from '../../TerminalContext';
-import { FS } from '../../fs';
+import { FS } from '../../fs/fs';
+import { useTerminalContext } from '../../hooks/TerminalContext';
 
 const Nano = () => {
-  const { closeApp, path, prevData } = useContext(TerminalContext);
+  const { closeApp, path, prevData } = useTerminalContext();
   const [data, setData] = useState(prevData || '');
   const [filepath, setFilepath] = useState(path || '');
   const modified: boolean =

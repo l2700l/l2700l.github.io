@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LineStart from './LineStart';
 import styles from '../Simulator.module.scss';
 

@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { Commands } from './commands';
 import styles from './Simulator.module.scss';
 import {
@@ -7,52 +7,13 @@ import {
   useDeviceData,
   useMobileOrientation,
 } from 'react-device-detect';
-import { FS } from './fs';
-import { home } from './fileSystem';
-import AppsProvider from './AppsProvider';
-import { Applications } from './applications/applicationsEnum';
-import { TerminalContext } from './TerminalContext';
+import { FS } from '../fs/fs';
+import AppsProvider from '../applications/AppsProvider';
+import { Applications } from '../applications/applicationsEnum';
+import { TerminalProvider } from '../hooks/TerminalContext';
 import Output from './lines/Output';
 import Input from './lines/Input';
-
-FS.import(home);
-
-const help = `command <required> [optional]
-
-usage:
-
-ls [path]
-    – show files and directories
-cd <path>
-    – change directory
-cat <path to file>
-    – read file
-whoiam
-    – show user
-mkdir <path>
-    – create directory
-rm [-R] <path>
-    - remove file or directory
-cp <'path from'> <'path to'>
-    - copy file
-echo <data>
-    – write to output
-clear
-    – clear outputs & commands
-rev
-    - expand string
-    
-programs:
-
-neofetch
-    - system information tool
-nano [path]
-    – write to file
-cowsay <text> [--character cow|fox|tux]
-    - talking cow, what?
-*secret*
-    - do not make mistakes in commands!
-`;
+import { help } from '../other/help';
 
 const Simulator: React.FC<{
   user?: string;
@@ -74,6 +35,7 @@ const Simulator: React.FC<{
     userTextColor?: string;
     commandTextColor?: string;
   };
+  fs?: Record<string, any>;
 }> = ({
   user = 'user',
   name = 'computer',
@@ -89,6 +51,7 @@ const Simulator: React.FC<{
     userTextColor: '#A380DA',
     commandTextColor: '#7CC9DC',
   },
+  fs = {},
 }) => {
   const [commands, setCommands] = useState<Array<string>>([]);
   const [updatedCommand, setUpdatedCommand] = useState<string | undefined>();
@@ -103,6 +66,10 @@ const Simulator: React.FC<{
   const inputRef = useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const orientation = useMobileOrientation();
+
+  useEffect(() => {
+    FS.import(fs);
+  }, []);
 
   const closeApp = (output?: string) => {
     if (output) {
@@ -119,12 +86,6 @@ const Simulator: React.FC<{
     }
   };
 
-  const scrollToBottom = () => {
-    if (divRef?.current !== undefined) {
-      divRef!.current!.scrollTop = divRef?.current?.scrollHeight || 0;
-    }
-  };
-
   const cd = (newPath: string): string => {
     if (currentPath === '' && newPath.startsWith('../')) {
       return '';
@@ -138,6 +99,12 @@ const Simulator: React.FC<{
       return '';
     } catch (e) {
       return 'uncorrected path';
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (divRef?.current !== undefined) {
+      divRef!.current!.scrollTop = divRef?.current?.scrollHeight || 0;
     }
   };
 
@@ -318,18 +285,18 @@ const Simulator: React.FC<{
         setCurrentApp(Applications.sl);
         break;
       case Commands.cowsay:
-        const cowsayArgs = commandArray
+        const cowSayArgs = commandArray
           .slice(1)
           .join(' ')
           .split(' --character ');
-        if (cowsayArgs[0] !== '') {
-          setValue({ message: cowsayArgs[0], character: cowsayArgs[1] });
+        if (cowSayArgs[0] !== '') {
+          setValue({ message: cowSayArgs[0], character: cowSayArgs[1] });
           setCurrentApp(Applications.cowsay);
           setCommands((prevState) => {
             setHistoryIndex(prevState.length + 1);
             return [
               ...prevState,
-              commandArray[0] + ' ' + cowsayArgs.join(' --character '),
+              commandArray[0] + ' ' + cowSayArgs.join(' --character '),
             ];
           });
           setUpdatedCommand(undefined);
@@ -404,7 +371,7 @@ const Simulator: React.FC<{
         inputRef?.current?.focus();
       }}
     >
-      <TerminalContext.Provider value={{ ...value, closeApp, currentApp }}>
+      <TerminalProvider value={{ ...value, closeApp, currentApp }}>
         <AppsProvider closeApp={closeApp} currentApp={currentApp} value={value}>
           {outputs.map((output, index) => (
             <Output
@@ -423,7 +390,7 @@ const Simulator: React.FC<{
               {output.output}
             </Output>
           ))}
-          <div style={{ display: 'flex' }}>
+          <div className={styles.simulator__input}>
             <Input
               user={user}
               name={name}
@@ -439,7 +406,7 @@ const Simulator: React.FC<{
             />
           </div>
         </AppsProvider>
-      </TerminalContext.Provider>
+      </TerminalProvider>
     </div>
   );
 };

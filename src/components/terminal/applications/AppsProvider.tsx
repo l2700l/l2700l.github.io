@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
-import { Applications } from './applications/applicationsEnum';
-import { NeofetchApplication } from './applications/neofetch/neofetch.application';
-import { SlApplication } from './applications/sl/sl.application';
-import { NanoApplication } from './applications/nano/nano.application';
-import { CowSayApplication } from './applications/cowsay/cowsay.application';
+import { Applications } from './applicationsEnum';
+import { NeofetchApplication } from './neofetch/neofetch.application';
+import { SlApplication } from './sl/sl.application';
+import { NanoApplication } from './nano/nano.application';
+import { CowSayApplication } from './cowsay/cowsay.application';
 
 // @ts-ignore
 const AppsProvider: React.FC<{

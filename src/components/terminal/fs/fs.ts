@@ -1,5 +1,5 @@
 export class FS {
-  private static tree: { [key: string]: any } = {};
+  private static tree: Record<string, any> = {};
 
   private static home: string = '';
 
@@ -55,7 +55,7 @@ export class FS {
 
   private static _getFolderWithoutLast(
     path: string
-  ): [{ [key: string]: any }, string] {
+  ): [Record<string, any>, string] {
     const tokens = path.split('/');
     return [
       this.getFolder(tokens.slice(0, tokens.length - 1).join('/')),
