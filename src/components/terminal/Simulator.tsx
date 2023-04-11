@@ -63,12 +63,30 @@ const Simulator: React.FC<{
   };
   startMessage?: string;
   prompt?: string;
+  theme?: {
+    simulatorBackground?: string;
+    computerTextColor?: string;
+    atTextColor?: string;
+    pathTextColor?: string;
+    outputTextColor?: string;
+    userTextColor?: string;
+    commandTextColor?: string;
+  };
 }> = ({
   user = 'user',
   name = 'computer',
   prompt = '$',
   borderRadius,
   startMessage,
+  theme = {
+    simulatorBackground: '#282A34',
+    computerTextColor: '#5FBDAD',
+    atTextColor: '#75C6D0',
+    pathTextColor: '#FF479C',
+    outputTextColor: '#FFFFFF',
+    userTextColor: '#A380DA',
+    commandTextColor: '#7CC9DC',
+  },
 }) => {
   const [commands, setCommands] = useState<Array<string>>([]);
   const [updatedCommand, setUpdatedCommand] = useState<string | undefined>();
@@ -335,18 +353,29 @@ const Simulator: React.FC<{
     <div
       ref={divRef}
       className={styles.simulator}
-      style={{
-        borderTopLeftRadius: borderRadius?.topLeft ? borderRadius?.topLeft : 0,
-        borderTopRightRadius: borderRadius?.topRight
-          ? borderRadius?.topRight
-          : 0,
-        borderBottomLeftRadius: borderRadius?.bottomLeft
-          ? borderRadius?.bottomLeft
-          : 0,
-        borderBottomRightRadius: borderRadius?.bottomRight
-          ? borderRadius?.bottomRight
-          : 0,
-      }}
+      style={
+        {
+          borderTopLeftRadius: borderRadius?.topLeft
+            ? borderRadius?.topLeft
+            : 0,
+          borderTopRightRadius: borderRadius?.topRight
+            ? borderRadius?.topRight
+            : 0,
+          borderBottomLeftRadius: borderRadius?.bottomLeft
+            ? borderRadius?.bottomLeft
+            : 0,
+          borderBottomRightRadius: borderRadius?.bottomRight
+            ? borderRadius?.bottomRight
+            : 0,
+          '--simulatorBackground': theme.simulatorBackground,
+          '--computerTextColor': theme.computerTextColor,
+          '--atTextColor': theme.atTextColor,
+          '--pathTextColor': theme.pathTextColor,
+          '--outputTextColor': theme.outputTextColor,
+          '--userTextColor': theme.userTextColor,
+          '--commandTextColor': theme.commandTextColor,
+        } as React.CSSProperties
+      }
       onKeyDownCapture={handleHistory}
       onClick={() => {
         inputRef?.current?.focus();

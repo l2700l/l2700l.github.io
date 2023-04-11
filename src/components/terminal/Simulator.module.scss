@@ -1,12 +1,16 @@
-@import '../../_variables.scss';
-$simulatorBackground: #282A34;
-$computerText: #5FBDAD;
-$atText: #75C6D0;
-$pathText: #FF479C;
+
+
 .simulator {
+    --simulatorBackground: #282A34;
+    --computerTextColor: #5FBDAD;
+    --atTextColor: #75C6D0;
+    --pathTextColor: #FF479C;
+    --outputTextColor: #FFFFFF;
+    --userTextColor: #A380DA;
+    --commandTextColor: #7CC9DC;
     font-family: 'Consola Mono', Arial, serif;
-    color: white;
-    background-color: $simulatorBackground;
+    color: var(--outputTextColor);
+    background-color: var(--simulatorBackground);
     height: calc(100% - 2.5rem);
     width: calc(100% - 1rem);
     overflow-y: scroll;
@@ -21,20 +25,20 @@ $pathText: #FF479C;
     position: relative;
 }
 .simulator__user {
-    color: $userText;
+    color: var(--userTextColor);
 }
 .simulator__computer {
-    color: $computerText;
+    color: var(--computerTextColor);
 }
 .simulator__at {
-    color: $atText;
+    color: var(--atTextColor);
 }
 .simulator__path {
-    color: $pathText;
+    color: var(--pathTextColor);
 }
 .simulator__command {
-    color: $commandText;
-    background-color: $simulatorBackground;
+    color: var(--commandTextColor);
+    background-color: var(--simulatorBackground);
     margin-left: 1rem;
 }
 input.simulator__command {
