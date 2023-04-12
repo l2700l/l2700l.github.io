@@ -1,12 +1,7 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { Commands } from './commands';
 import styles from './Simulator.module.scss';
-import {
-  browserName,
-  isBrowser,
-  useDeviceData,
-  useMobileOrientation,
-} from 'react-device-detect';
+import { useDeviceData } from 'react-device-detect';
 import { FS } from '../fs/fs';
 import AppsProvider from '../applications/AppsProvider';
 import { Applications } from '../applications/applicationsEnum';
@@ -14,6 +9,7 @@ import { TerminalProvider } from '../hooks/TerminalContext';
 import Output from './lines/Output';
 import Input from './lines/Input';
 import { help } from '../other/help';
+import { device } from '../interfaces/TermApp';
 
 const Simulator: React.FC<{
   user?: string;
@@ -55,6 +51,9 @@ const Simulator: React.FC<{
 }) => {
   const [commands, setCommands] = useState<Array<string>>([]);
   const [updatedCommand, setUpdatedCommand] = useState<string | undefined>();
+  const [device, setDevice] = useState<device>(
+    useDeviceData(window.navigator.userAgent)
+  );
   const [, setHistoryIndex] = useState(0);
   const [outputs, setOutputs] = useState<
     Array<{ output: ReactNode; path: string }>
@@ -65,17 +64,17 @@ const Simulator: React.FC<{
   const [value, setValue] = useState<{ [key: string]: any }>({});
   const inputRef = useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
-  const orientation = useMobileOrientation();
 
   useEffect(() => {
     FS.import(fs);
   }, []);
 
-  const closeApp = (output?: string) => {
+  const closeApp = (output?: ReactNode) => {
     if (output) {
       setOutputs((prevState) => [...prevState, { output, path: currentPath }]);
     }
     setCurrentApp(undefined);
+    setTimeout(() => inputRef?.current?.focus());
   };
 
   const cutHomePath = (path: string) => {
@@ -129,6 +128,8 @@ const Simulator: React.FC<{
   };
 
   const execute = (command: string) => {
+    const deviceData = useDeviceData(window.navigator.userAgent);
+    setDevice(deviceData);
     const commandArray = command.split(' ');
     if (!Object.keys(Commands).includes(commandArray[0].toLowerCase())) {
       setOutputs((prevState) => [
@@ -140,7 +141,7 @@ const Simulator: React.FC<{
         return [...prevState, commandArray[0]];
       });
       setUpdatedCommand(undefined);
-      setTimeout(() => scrollToBottom(), 1);
+      setTimeout(() => scrollToBottom());
       return;
     }
     switch (Commands[commandArray[0].toLowerCase() as keyof typeof Commands]) {
@@ -266,19 +267,6 @@ const Simulator: React.FC<{
         ]);
         break;
       case Commands.neofetch:
-        const deviceData = useDeviceData(window.navigator.userAgent);
-        setValue({
-          user,
-          name,
-          isBrowser: isBrowser ? 'PC' : 'Mobile',
-          browserName,
-          deviceData,
-          orientation: orientation.orientation,
-          resolution: {
-            width: window.screen.width,
-            height: window.screen.height,
-          },
-        });
         setCurrentApp(Applications.neofetch);
         break;
       case Commands.sl:
@@ -336,7 +324,7 @@ const Simulator: React.FC<{
       return [...prevState, commandArray[0]];
     });
     setUpdatedCommand(undefined);
-    setTimeout(() => scrollToBottom(), 1);
+    setTimeout(() => scrollToBottom());
   };
 
   return (
@@ -372,7 +360,12 @@ const Simulator: React.FC<{
       }}
     >
       <TerminalProvider value={{ ...value, closeApp, currentApp }}>
-        <AppsProvider closeApp={closeApp} currentApp={currentApp} value={value}>
+        <AppsProvider
+          closeApp={closeApp}
+          currentApp={currentApp}
+          value={value}
+          valuee={{ user, name, path: currentPath, device }}
+        >
           {outputs.map((output, index) => (
             <Output
               key={index}

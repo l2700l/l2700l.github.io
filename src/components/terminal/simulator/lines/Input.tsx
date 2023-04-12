@@ -23,6 +23,8 @@ const Input: React.FC<props> = React.forwardRef<HTMLInputElement, props>(
       if (e.code === 'Enter') {
         execute(command);
         setCommand('');
+        // @ts-ignore
+        ref.current.focus();
       }
     };
     return (

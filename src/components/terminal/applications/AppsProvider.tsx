@@ -1,17 +1,19 @@
 import React, { ReactNode } from 'react';
 import { Applications } from './applicationsEnum';
-import { NeofetchApplication } from './neofetch/neofetch.application';
 import { SlApplication } from './sl/sl.application';
 import { NanoApplication } from './nano/nano.application';
 import { CowSayApplication } from './cowsay/cowsay.application';
+import { device, TermApp } from '../interfaces/TermApp';
+import { neofetch } from '../../../blocks/terminal/fileSystem/apps';
 
-// @ts-ignore
 const AppsProvider: React.FC<{
   value: { [key: string]: any };
   currentApp: Applications | undefined;
-  closeApp: (output?: string) => void;
+  closeApp: (output?: ReactNode) => void;
   children: ReactNode | undefined;
-}> = ({ value, children, currentApp, closeApp }) => {
+  valuee: { user: string; name: string; path: string; device: device };
+  applications?: Record<string, TermApp>;
+}> = ({ value, children, currentApp, closeApp, valuee }) => {
   const switchApp = () => {
     if (currentApp === undefined) return children;
     switch (currentApp) {
@@ -19,23 +21,25 @@ const AppsProvider: React.FC<{
         // TODO: realize nano app
         return NanoApplication().open();
       case Applications.neofetch:
-        closeApp(
-          NeofetchApplication().open(
-            value.user,
-            value.name,
-            value.isBrowser ? 'PC' : 'Mobile',
-            value.browserName,
-            value.deviceData,
-            value.orientation,
-            value.resolution,
-            window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'Dark'
-              : 'Light',
-            window.navigator.language,
-            new Date().getTimezoneOffset()
-          ) as string
-        );
-        return children;
+        // closeApp(
+        //   NeofetchApplication().open(
+        //     value.user,
+        //     value.name,
+        //     value.isBrowser ? 'PC' : 'Mobile',
+        //     value.browserName,
+        //     value.deviceData,
+        //     value.orientation,
+        //     value.resolution,
+        //     window.matchMedia('(prefers-color-scheme: dark)').matches
+        //       ? 'Dark'
+        //       : 'Light',
+        //     window.navigator.language,
+        //     new Date().getTimezoneOffset()
+        //   ) as string
+        // );
+        neofetch.execute('', closeApp, valuee);
+        break;
+      // return children;
       case Applications.sl:
         return SlApplication().open();
       case Applications.cowsay:
