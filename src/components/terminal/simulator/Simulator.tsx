@@ -9,6 +9,7 @@ import Input from './lines/Input';
 import { generateHelp } from '../other/help';
 import { device } from '../interfaces/TermApp';
 import { SimulatorProps } from '../interfaces/Simulator';
+import IO from './IO';
 
 const Simulator: React.FC<SimulatorProps> = ({
   user = 'user',
@@ -149,6 +150,8 @@ const Simulator: React.FC<SimulatorProps> = ({
     if (isApplication) {
       setCommand(command);
       setDevice(deviceData);
+      finishExecute(command);
+      return;
     }
     if (
       !isApplication &&
@@ -331,32 +334,20 @@ const Simulator: React.FC<SimulatorProps> = ({
         command={command}
         applications={applications}
       >
-        {outputs.map((output, index) => (
-          <>
-            <Output
-              key={index}
-              user={user}
-              name={name}
-              path={getPath(output.path)}
-              lineStart={!startMessage || index !== 0}
-              command={startMessage ? commands[index - 1] : commands[index]}
-              prompt={prompt}
-            >
-              {output.output}
-            </Output>
-          </>
-        ))}
-        <div className={styles.simulator__input}>
-          <Input
-            user={user}
-            name={name}
-            ref={inputRef}
-            path={getPath(currentPath)}
-            execute={execute}
-            updatedCommand={updatedCommand}
-            prompt={prompt}
-          />
-        </div>
+        <IO
+          outputs={outputs}
+          user={user}
+          name={name}
+          getPath={getPath}
+          commands={commands}
+          inputRef={inputRef}
+          currentPath={currentPath}
+          execute={execute}
+          prompt={prompt}
+          startMessage={startMessage}
+          updatedCommand={updatedCommand}
+          show={!!command}
+        />
       </AppsProvider>
     </div>
   );

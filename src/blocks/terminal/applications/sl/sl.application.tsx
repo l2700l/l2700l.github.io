@@ -7,6 +7,6 @@ export const sl: TermApp = {
     description: 'do not make mistakes in commands!',
   },
   execute: (command, closeApp) => {
-    return Sl({ closeApp });
+    return <Sl closeApp={closeApp} />;
   },
 };

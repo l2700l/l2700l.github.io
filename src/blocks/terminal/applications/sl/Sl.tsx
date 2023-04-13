@@ -109,7 +109,6 @@ const Sl: React.FC<TermAppComponent> = ({closeApp}) => {
     }, 50);
     return () => {
       clearInterval(interval)
-      closeApp();
     };
   }, []);
   return (

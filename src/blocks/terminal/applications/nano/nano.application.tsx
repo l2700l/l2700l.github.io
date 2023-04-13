@@ -13,6 +13,6 @@ export const nano: TermApp = {
     let prevData = FS.readFile(value.path + '/' + argsString);
     if (prevData === 'Uncorrected path') prevData = '';
     let path = argsString ? value.path + '/' + argsString : undefined;
-    return Nano({ closeApp, prevData, path });
-  },
+    return <Nano closeApp={closeApp} prevData={prevData} path={path}/>
+  }
 };
