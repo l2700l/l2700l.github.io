@@ -7,7 +7,7 @@ const Social: React.FC<{ brands?: { name: string; url: string }[] }> = ({
   return (
     <ul className={styles.social}>
       {brands.map((brand) => (
-        <li>
+        <li key={brand.name}>
           <a className={brand.name} href={brand.url} target="_blank">
             <span></span>
             <span></span>
