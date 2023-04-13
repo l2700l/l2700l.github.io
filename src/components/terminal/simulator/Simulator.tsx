@@ -133,6 +133,14 @@ const Simulator: React.FC<SimulatorProps> = ({
   };
 
   const execute = (command: string) => {
+    if (command === '') {
+      setOutputs((prevState) => [
+        ...prevState,
+        { output: '', path: currentPath },
+      ]);
+      finishExecute(command);
+      return;
+    }
     const deviceData = useDeviceData(window.navigator.userAgent);
     const commandArray = command.split(' ');
     const isApplication = Object.keys(applications).includes(
