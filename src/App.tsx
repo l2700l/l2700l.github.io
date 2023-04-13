@@ -23,7 +23,7 @@ const konamiCode = JSON.stringify([
 
 function App() {
   const [, setKeys] = useState<Array<string>>([]);
-  const [showTerminal, setShowTerminal] = useState(false);
+  const [showTerminal, setShowTerminal] = useState(true);
   const handleKeys = (e: React.KeyboardEvent<HTMLDivElement>) => {
     setKeys((prevState) => {
       const newState =

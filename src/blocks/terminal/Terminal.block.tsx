@@ -2,6 +2,10 @@ import React from 'react';
 import styles from './Terminal.block.module.scss';
 import { Terminal } from '../../components/terminal';
 import { home } from './fileSystem';
+import { neofetch } from './applications/neofetch/neofetch.application';
+import { cowsay } from './applications/cowsay/cowsay.application';
+import { sl } from './applications/sl/sl.application';
+import { nano } from './applications/nano/nano.application';
 
 const startMessage = `
     ██╗     ██████╗ ███████╗ ██████╗  ██████╗ ██╗
@@ -17,7 +21,6 @@ const startMessage = `
    ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║
    ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗
    ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
-   
 `;
 
 const TerminalBlock: React.FC<{ user: string; name: string }> = ({
@@ -41,6 +44,7 @@ const TerminalBlock: React.FC<{ user: string; name: string }> = ({
           startMessage={startMessage}
           user={user}
           name={name}
+          applications={{ neofetch, cowsay, sl, nano }}
         />
       </div>
     </>

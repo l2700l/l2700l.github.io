@@ -2,6 +2,8 @@ import { ReactNode } from 'react';
 
 export type AppOutput = ReactNode | void;
 
+export type closeApp = (output?: ReactNode) => void;
+
 export type device = {
   UA: {
     getBrowser: () => any;
@@ -24,7 +26,7 @@ export type device = {
 export interface IAppExecutor {
   (
     command: string,
-    closeApp: (output?: ReactNode) => void,
+    closeApp: closeApp,
     value: {
       user: string;
       name: string;
@@ -41,3 +43,14 @@ export interface TermApp {
   };
   execute: IAppExecutor;
 }
+
+export type TermAppComponent = {
+  command?: string;
+  closeApp: closeApp;
+  value?: {
+    user: string;
+    name: string;
+    path: string;
+    device: device;
+  };
+};

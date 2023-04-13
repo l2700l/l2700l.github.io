@@ -1,4 +1,7 @@
-export const help = `command <required> [optional]
+import { TermApp } from '../interfaces/TermApp';
+
+export const generateHelp = (applications: Record<string, TermApp>): string => {
+  let base = `command <required> [optional]
 
 usage:
 
@@ -22,15 +25,21 @@ clear
     – clear outputs & commands
 rev
     - expand string
-    
+${
+  Object.keys(applications).length > 0
+    ? `
+
 programs:
 
-neofetch
-    - system information tool
-nano [path]
-    – write to file
-cowsay <text> [--character cow|fox|tux]
-    - talking cow, what?
-*secret*
-    - do not make mistakes in commands!
-`;
+`
+    : ''
+}`;
+  for (let command in applications) {
+    base += `${applications[command].help?.template || command} ${
+      applications[command].help?.description
+        ? `\n    - ${applications[command].help?.description}\n`
+        : '\n'
+    }`;
+  }
+  return base;
+};

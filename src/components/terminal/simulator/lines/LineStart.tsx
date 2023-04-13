@@ -9,7 +9,7 @@ const LineStart: React.FC<{
   children?: ReactNode | undefined;
 }> = ({ user, name, path, prompt = '$', children }) => {
   return (
-    <span>
+    <span className={styles.simulator__line_padding}>
       <span className={styles.simulator__user}>{user}</span>
       <span className={styles.simulator__at}>@</span>
       <span className={styles.simulator__computer}>{name}</span>

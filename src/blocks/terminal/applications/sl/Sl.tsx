@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useTerminalContext } from '../../hooks/TerminalContext';
-import styles from './SL.module.scss';
+import styles from './Sl.module.scss';
+import { TermAppComponent } from '../../../../components/terminal/interfaces/TermApp';
 const trainSmokes = [
 `                       (@@) (  ) (@)  ( )  @@    ()    @     O     @
                   (   )
@@ -85,9 +85,8 @@ const trainWheels = [
 let wheelIndex = 0;
 let smokeIndex = 0;
 
-const Sl = () => {
+const Sl: React.FC<TermAppComponent> = ({closeApp}) => {
   const divRef = useRef<HTMLDivElement>(null);
-  const {closeApp} = useTerminalContext()
   const pRef = useRef<HTMLParagraphElement>(null);
   const [train, setTrain] = useState(trainSmokes[smokeIndex] + trainLocomotive + trainWheels[wheelIndex]);
   const [left, setLeft] = useState(0)

@@ -1,10 +1,10 @@
-import { TermApp } from '../../../components/terminal/interfaces/TermApp';
+import { TermApp } from '../../../../components/terminal/interfaces/TermApp';
 import { browserName, isBrowser } from 'react-device-detect';
 
 export const neofetch: TermApp = {
   help: {
-    template: 'hi',
-    description: 'mda',
+    template: 'neofetch',
+    description: 'system information tool',
   },
   execute: (command, closeApp, value) => {
     const timeZone = new Date().getTimezoneOffset()

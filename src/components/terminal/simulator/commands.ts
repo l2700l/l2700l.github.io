@@ -7,12 +7,8 @@ export enum Commands {
   whoami = 'whoami',
   clear = 'clear',
   mkdir = 'mkdir',
-  nano = 'nano',
   echo = 'echo',
-  neofetch = 'neofetch',
   rm = 'rm',
   cp = 'cp',
-  sl = 'sl',
   rev = 'rev',
-  cowsay = 'cowsay',
 }

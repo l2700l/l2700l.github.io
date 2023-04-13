@@ -63,7 +63,7 @@ export class FS {
     ];
   }
 
-  public static readFile(path: string) {
+  public static readFile(path: string): string | 'Uncorrected path' {
     const [folder, file] = this._getFolderWithoutLast(path);
     if (folder[file] && typeof folder[file] === 'string') {
       return folder[file];

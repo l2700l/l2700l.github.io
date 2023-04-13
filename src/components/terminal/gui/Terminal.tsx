@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Terminal.module.scss';
 import Simulator from '../simulator/Simulator';
-const Terminal: React.FC<{
-  user?: string;
-  name?: string;
-  startMessage?: string;
-  fs?: Record<string, any>;
-}> = ({ user = 'user', name = 'computer', startMessage, fs }) => {
+import { SimulatorProps } from '../interfaces/Simulator';
+import Buttons from './Buttons';
+const Terminal: React.FC<SimulatorProps> = ({
+  user = 'user',
+  name = 'computer',
+  prompt = '$',
+  startMessage,
+  theme = {
+    simulatorBackground: '#282A34',
+    computerTextColor: '#5FBDAD',
+    atTextColor: '#75C6D0',
+    pathTextColor: '#FF479C',
+    outputTextColor: '#FFFFFF',
+    userTextColor: '#A380DA',
+    commandTextColor: '#7CC9DC',
+  },
+  fs = {},
+  applications = {},
+}) => {
   const [orientation, setOrientation] = useState<'landscape' | 'portrait'>(
     window.innerWidth > window.innerHeight ? 'landscape' : 'portrait'
   );
@@ -26,28 +39,7 @@ const Terminal: React.FC<{
       {orientation === 'landscape' ? (
         <div className={styles.terminal}>
           <div className={styles.terminal__top}>
-            <div>
-              <svg width="60" height="15">
-                <circle
-                  cx="15"
-                  cy="7"
-                  r="6"
-                  style={{ fill: 'rgb(230,106,103)' }}
-                />
-                <circle
-                  cx="30"
-                  cy="7"
-                  r="6"
-                  style={{ fill: 'rgb(233,214,137)' }}
-                />
-                <circle
-                  cx="45"
-                  cy="7"
-                  r="6"
-                  style={{ fill: 'rgb(184,227,139)' }}
-                />
-              </svg>
-            </div>
+            <Buttons />
             <div className={styles.terminal__header}>
               {user}@{name}
             </div>
@@ -55,9 +47,12 @@ const Terminal: React.FC<{
           <Simulator
             name={name}
             user={user}
-            fs={fs}
+            prompt={prompt}
             borderRadius={{ bottomLeft: '0.5rem', bottomRight: '0.5rem' }}
             startMessage={startMessage}
+            theme={theme}
+            fs={fs}
+            applications={applications}
           />
         </div>
       ) : (

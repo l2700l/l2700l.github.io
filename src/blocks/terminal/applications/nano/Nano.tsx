@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
 import styles from './Nano.module.scss';
-import { FS } from '../../fs/fs';
-import { useTerminalContext } from '../../hooks/TerminalContext';
+import { TermAppComponent } from '../../../../components/terminal/interfaces/TermApp';
+import { FS } from '../../../../components/terminal/fs/fs';
 
-const Nano = () => {
-  const { closeApp, path, prevData } = useTerminalContext();
+const Nano: React.FC<
+  TermAppComponent & { prevData?: string; path?: string }
+> = ({ closeApp, prevData, path }) => {
   const [data, setData] = useState(prevData || '');
   const [filepath, setFilepath] = useState(path || '');
   const modified: boolean =
@@ -79,6 +80,7 @@ const Nano = () => {
         disabled={buttonsMode !== 'global'}
         onChange={(e) => setData(e.target.value)}
       />
+      {buttonsMode === 'global' && <div />}
       {buttonsMode === 'write' && (
         <p>
           File name to write :{' '}
