@@ -23,4 +23,4 @@ const Output: React.FC<{
   );
 };
 
-export default Output;
+export default React.memo(Output);

@@ -22,4 +22,4 @@ const LineStart: React.FC<{
   );
 };
 
-export default LineStart;
+export default React.memo(LineStart);

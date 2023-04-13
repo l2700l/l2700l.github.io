@@ -134,13 +134,13 @@ const Simulator: React.FC<SimulatorProps> = ({
 
   const execute = (command: string) => {
     const deviceData = useDeviceData(window.navigator.userAgent);
-    setDevice(deviceData);
     const commandArray = command.split(' ');
     const isApplication = Object.keys(applications).includes(
       commandArray[0].toLowerCase()
     );
     if (isApplication) {
       setCommand(command);
+      setDevice(deviceData);
     }
     if (
       !isApplication &&
@@ -153,6 +153,7 @@ const Simulator: React.FC<SimulatorProps> = ({
       finishExecute(command);
       return;
     } else {
+      setDevice(deviceData);
       switch (
         Commands[commandArray[0].toLowerCase() as keyof typeof Commands]
       ) {
