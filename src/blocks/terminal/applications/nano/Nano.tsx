@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
+import { FS, TermAppComponent } from 'reterm';
 import styles from './Nano.module.scss';
-import { TermAppComponent } from '../../../../components/terminal/interfaces/TermApp';
-import { FS } from '../../../../components/terminal/fs/fs';
 
 const Nano: React.FC<
   TermAppComponent & { prevData?: string; path?: string }

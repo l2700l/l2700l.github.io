@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { TermAppComponent } from 'reterm';
 import styles from './Sl.module.scss';
-import { TermAppComponent } from '../../../../components/terminal/interfaces/TermApp';
 const trainSmokes = [
 `                       (@@) (  ) (@)  ( )  @@    ()    @     O     @
                   (   )

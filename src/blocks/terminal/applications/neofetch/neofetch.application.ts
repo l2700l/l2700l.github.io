@@ -1,5 +1,5 @@
-import { TermApp } from '../../../../components/terminal/interfaces/TermApp';
 import { browserName, isBrowser } from 'react-device-detect';
+import { TermApp } from 'reterm';
 
 export const neofetch: TermApp = {
   help: {

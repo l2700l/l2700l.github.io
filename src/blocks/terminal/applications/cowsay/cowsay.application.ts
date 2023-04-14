@@ -1,7 +1,6 @@
-import { TermApp } from '../../../../components/terminal/interfaces/TermApp';
 import { getCharacter } from './getCharacter';
-import { getArgs } from '../../../../components/terminal/other/getArgs';
 import { generateBubble } from './generateBubble';
+import { getArgs, TermApp } from 'reterm';
 
 export const cowsay: TermApp = {
   help: {

@@ -1,7 +1,5 @@
-import { TermApp } from '../../../../components/terminal/interfaces/TermApp';
+import { FS, getArgs, TermApp } from 'reterm';
 import Nano from './Nano';
-import { FS } from '../../../../components/terminal/fs/fs';
-import { getArgs } from '../../../../components/terminal/other/getArgs';
 
 export const nano: TermApp = {
   help: {

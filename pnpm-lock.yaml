@@ -10,6 +10,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
+  reterm:
+    specifier: ^0.0.3
+    version: 0.0.3(react-device-detect@2.2.3)(react-dom@18.2.0)(react@18.2.0)
 
 devDependencies:
   '@types/react':
@@ -1889,6 +1892,18 @@ packages:
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
     dev: true
+
+  /reterm@0.0.3(react-device-detect@2.2.3)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-EgQM+GVY952B93dTiYicngY1YeIHLQwa9XeheGTb/gAe86Twd08xIEISDSbAHUe2qCbBOO8l1aBdfyBWAZTrpA==}
+    peerDependencies:
+      react: ^17.0.0
+      react-device-detect: ^2.2.3
+      react-dom: ^17.0.0
+    dependencies:
+      react: 18.2.0
+      react-device-detect: 2.2.3(react-dom@18.2.0)(react@18.2.0)
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /retry@0.12.0:
     resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}

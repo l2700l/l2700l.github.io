@@ -1,4 +1,4 @@
-import { TermApp } from '../../../../components/terminal/interfaces/TermApp';
+import { TermApp } from 'reterm';
 import Sl from './Sl';
 
 export const sl: TermApp = {
